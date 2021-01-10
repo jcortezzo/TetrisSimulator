@@ -54,6 +54,7 @@ public class Tile : MonoBehaviour
     public void SetTileType(TileType type)
     {
         this.type = type;
+        SetTexture(type);
     }
 
     public void SetTileTypeFromColor(Color color)
@@ -88,6 +89,12 @@ public class Tile : MonoBehaviour
             if(t.type == type)
             {
                 sr.sprite = t.sprite;
+
+                // uhhh yeah idk
+                if (type == TileType.Piece)
+                {
+                    sr.color = Color.blue;
+                }
             }
         }
     }

@@ -15,6 +15,9 @@ public class Tile : MonoBehaviour
 
     float timeElapsed;
 
+    private bool selected;
+    private Color previousColor;
+
     private void Awake()
     {
         sr = this.GetComponent<SpriteRenderer>();
@@ -39,6 +42,13 @@ public class Tile : MonoBehaviour
             }
             timeElapsed += Time.deltaTime;
         }
+        if(selected)
+        {
+            sr.color = Color.red;
+        } else
+        {
+            sr.color = previousColor;
+        }
     }
 
     public void SetTileType(TileType type)
@@ -52,7 +62,9 @@ public class Tile : MonoBehaviour
         {
             type = TileType.Transparent;
             sr.color = Color.white;
+            previousColor = color;
             SetTexture(type);
+
             return;
         } else if (color == Color.white)
         {
@@ -63,9 +75,9 @@ public class Tile : MonoBehaviour
         } else
         {
             type = TileType.Piece;
-            //Debug.LogError("Color unknown");
         }
         sr.color = color;
+        previousColor = color;
         SetTexture(type);
     }
 
@@ -78,6 +90,16 @@ public class Tile : MonoBehaviour
                 sr.sprite = t.sprite;
             }
         }
+    }
+
+    public void Select()
+    {
+        selected = true;
+    }
+
+    public void Unselect()
+    {
+        selected = false;
     }
 }
 

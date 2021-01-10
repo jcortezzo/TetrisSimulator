@@ -16,6 +16,8 @@ public class Board : MonoBehaviour
     public float discoTime;
     public bool isDisco;
 
+    public Piece piece;
+
     private void Awake()
     {
         if(Instance == null)

@@ -9,26 +9,36 @@ public class Player : MonoBehaviour
     [SerializeField] private Queue<Piece> pieces;
     [SerializeField] private Piece tempPieceForTesting;
 
-    [SerializeField] private GameObject piecePrefab;
+    [SerializeField] private int selectedPiece;
+    [SerializeField] private List<GameObject> piecePrefab;
     [SerializeField] private Piece currentPiece;
 
     public LayerMask layerMask;
 
     private bool wasRotated;
 
+    private void Awake()
+    {
+        selectedPiece = 0;  // just for testing
+        //piecePrefab = new List<GameObject>();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         pieces = new Queue<Piece>();
+        
         //pieces.Enqueue(new JPiece());
     }
 
     // Update is called once per frame
     void Update()
     {
+        SelectPiece();
         if (currentPiece == null)
         {
-            currentPiece = Instantiate(piecePrefab).GetComponent<Piece>();
+            Debug.Log(selectedPiece);
+            currentPiece = Instantiate(piecePrefab[selectedPiece]).GetComponent<Piece>();
         }
         RotatePiece();
         SimpleMouseOver();
@@ -39,6 +49,24 @@ public class Player : MonoBehaviour
 
             //Board.Instance.PlacePiece(/*pieces.Dequeue()*/ Instantiate(tempPieceForTesting), selection);
             Board.Instance.PlacePiece(currentPiece, selection);
+            currentPiece = null;
+        }
+    }
+
+    private void SelectPiece()
+    {
+        for (KeyCode kc = KeyCode.Alpha1; kc <= KeyCode.Alpha1 + piecePrefab.Count; kc++)
+        {
+            if (Input.GetKeyDown(kc))
+            {
+                selectedPiece = (int) (kc - KeyCode.Alpha1);
+                if (currentPiece != null)
+                {
+                    Destroy(currentPiece.gameObject);
+                    currentPiece = null;
+                }
+                wasRotated = true;
+            }
         }
     }
 

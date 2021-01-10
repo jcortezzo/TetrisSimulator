@@ -237,7 +237,13 @@ public class Board : MonoBehaviour
                     if(y + 1 < height - 1)
                     {
                         Tile bellowTile = board[y + 1, x];
+                        if (bellowTile.GetTileType() != TileType.Normal &&
+                            bellowTile.GetTileType() != TileType.Transparent)
+                        {
+                            continue;
+                        }
                         bellowTile.SetTileType(tile.GetTileType());
+                        bellowTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
                         tile.SetTileType(TileType.Normal);
                         
 

@@ -66,6 +66,11 @@ public class Tile : MonoBehaviour
         correspondingPiece = p;
     }
 
+    public Piece GetCorrespondingPiece()
+    {
+        return correspondingPiece;
+    }
+
     public void Preview()
     {
         isPreview = true;

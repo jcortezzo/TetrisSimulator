@@ -45,6 +45,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 2678703796631494522, guid: dc537670d3292664394932240d15d008,
     type: 3}
+  sprite: {fileID: 0}
   width: 10
   height: 20
   discoTime: 0.5
+  isDisco: 0

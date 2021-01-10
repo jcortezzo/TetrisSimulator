@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
         SelectPiece();
         if (currentPiece == null)
         {
-            Debug.Log(selectedPiece);
+            //Debug.Log(selectedPiece);
             currentPiece = Instantiate(piecePrefab[selectedPiece]).GetComponent<Piece>();
         }
         RotatePiece();
@@ -51,6 +51,21 @@ public class Player : MonoBehaviour
             Board.Instance.PlacePiece(currentPiece, selection);
             currentPiece = null;
 
+        }
+
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            Board.Instance.MovePieceLeft();
+        }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            Board.Instance.MovePieceRight();
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            Board.Instance.MovePieceDown();
         }
     }
 
@@ -133,3 +148,5 @@ public class Player : MonoBehaviour
 
     }
 }
+
+public enum MoveDirection { Left, Right, Down }

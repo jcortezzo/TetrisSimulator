@@ -11,8 +11,8 @@ public class Board : MonoBehaviour
     [SerializeField] Sprite map;
 
     [SerializeField] public List<Tile> pieces;
-    [SerializeField] private Dictionary<Piece, Tile[,]> pieceDict;
-    //[SerializeField] private (Piece, Tile[,]) pieceDict;
+    //[SerializeField] private Dictionary<Piece, Tile[,]> pieceDict;
+    [SerializeField] private (Piece, Tile[,]) pieceTuple;
     public int width;
     public int height;
 
@@ -25,6 +25,8 @@ public class Board : MonoBehaviour
     private Dictionary<Vector2Int, Tile> coordToTile;
 
     ISet<Tile> previewedTiles;
+
+    public MoveDirection moveDirection = MoveDirection.Down;
 
     //public Piece piece;
     [SerializeField] private float ticTime;
@@ -46,7 +48,7 @@ public class Board : MonoBehaviour
     {
         tileToCoord = new Dictionary<Tile, Vector2Int>();
         coordToTile = new Dictionary<Vector2Int, Tile>();
-        pieceDict = new Dictionary<Piece, Tile[,]>();
+        //pieceDict = new Dictionary<Piece, Tile[,]>();
 
         previewedTiles = new HashSet<Tile>();
 
@@ -126,8 +128,9 @@ public class Board : MonoBehaviour
 
         Tile[,] tilesPiece = new Tile[p.boundingBox.GetLength(0), p.boundingBox.GetLength(1)];
         //pieceDict[p] = tilesPiece;
-        pieceDict.Add(p, tilesPiece);
-        //pieceDict = (p, tilesPiece);
+        //pieceDict.Add(p, tilesPiece);
+        (Piece, Tile[,]) newTuple;
+        newTuple = (p, tilesPiece);
         for (int y = placementPos.y, y1 = 0 ; y < p.boundingBox.GetLength(0) + placementPos.y; y++, y1++)
         {
             for (int x = placementPos.x, x1 = 0; x < p.boundingBox.GetLength(1) + placementPos.x; x++, x1++)
@@ -143,7 +146,13 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        TryCombinePiece(pieceDict);
+        if (pieceTuple.Item1 == null) pieceTuple = newTuple;
+        else
+        {
+            List<(Piece, Tile[,])> list = new List<(Piece, Tile[,])>();
+            list.Add(pieceTuple); list.Add(newTuple);
+            TryCombinePiece(list);
+        }
         //Debug.Log("size " + tilesPiece.GetLength(0) + " " + tilesPiece.GetLength(1));
         //for(int i = 0; i < tilesPiece.GetLength(0); i++)
         //{
@@ -154,14 +163,16 @@ public class Board : MonoBehaviour
         //}
     }
 
-    private void TryCombinePiece(Dictionary<Piece, Tile[,]> pieces)
+    private void TryCombinePiece(List<(Piece, Tile[,])> pieces)
     {
         int minX = 0, maxX = width - 1, minY = 0, maxY = height - 1;
         Piece initPiece = null;
-        foreach(Piece piece in pieces.Keys)
+
+        foreach((Piece, Tile[,]) pair in pieces)
         {
+            Piece piece = pair.Item1;
             if (initPiece == null) initPiece = piece;
-            Tile[,] tiles = pieces[piece];
+            Tile[,] tiles = pair.Item2;
             Vector2Int topLeft = tileToCoord[tiles[0, 0]];
             //Tile ti = tiles[tiles.GetLength(0) - 1, tiles.GetLength(1) - 1];
             //Debug.Log(ti);
@@ -188,8 +199,8 @@ public class Board : MonoBehaviour
             }
         }
 
-        pieceDict.Clear();
-        pieceDict.Add(newPiece, newPieceTiles);
+        pieceTuple = (newPiece, newPieceTiles);
+
     }
 
     private void MapBoard()
@@ -274,285 +285,294 @@ public class Board : MonoBehaviour
         if (startGame)
         {
             MovePieceDown();
-            //MovePieceLeft();
-            //MovePieceRight();
         }
 
     }
 
-    private void MovePieceDown()
+    private bool CanMove()
     {
-        foreach (Piece piece in pieceDict.Keys)
-        {
-            bool canMove = true;
-            Tile[,] tiles = pieceDict[piece];
-            int pieceHeight = tiles.GetLength(0);
-            int pieceWidth = tiles.GetLength(1);
-
-            // first pass to simulate
-            for (int y = pieceHeight - 1; y >= 0 && canMove; y--)
-            {
-                //string st = "";
-                for (int x = 0; x < pieceWidth && canMove; x++)
-                {
-                    Tile tile = tiles[y, x];
-                    //st += coord.ToString() + ", ";
-                    if (tile == null) continue;
-
-                    Vector2Int coord = tileToCoord[tile];
-                    if (tile.GetTileType() == TileType.Piece)
-                    {
-                        if (coord.y + 1 < height - 1)
-                        {
-                            Tile belowTile = coordToTile[new Vector2Int(coord.x, coord.y + 1)];
-
-                            //Debug.Log(tile.coord + " " + belowTile.coord);
-                            if (belowTile.GetTileType() == TileType.Wall || belowTile.GetTileType() == TileType.LevelPiece)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                            if (belowTile.GetTileType() != TileType.Normal &&
-                                belowTile.GetTileType() != TileType.Transparent)
-                            {
-                                continue;
-                            }
-
-                        }
-                    }
-                }
-                //Debug.Log(st);
-            }
-            if (!canMove) continue;
-
-            for (int y = pieceHeight - 1; y >= 0 && canMove; y--)
-            {
-                //string st = "";
-                for (int x = 0; x < pieceWidth && canMove; x++)
-                {
-                    Tile tile = tiles[y, x];
-                    //st += coord.ToString() + ", ";
-                    if (tile == null) continue;
-
-                    Vector2Int coord = tileToCoord[tile];
-                    if (tile.GetTileType() == TileType.Piece)
-                    {
-                        //IsContain(tiles, tile)
-                        if (coord.y + 1 < height - 1)
-                        {
-                            Tile belowTile = coordToTile[new Vector2Int(coord.x, coord.y + 1)];
-                            //Debug.Log(tile.coord + " " + belowTile.coord);
-                            if (belowTile.GetTileType() != TileType.Normal &&
-                                belowTile.GetTileType() != TileType.Transparent)
-                            {
-                                continue;
-                            }
-                            belowTile.SetTileType(tile.GetTileType());
-                            belowTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
-                            tiles[y, x] = belowTile;
-                            tile.SetTileType(TileType.Normal);
-
-                        }
-                    }
-                }
-            }
-        }
-
-            //for(int y = height - 1; y >=0; y--)
-            //{
-            //    for(int x = 0; x < width; x++)
-            //    {
-            //        Tile tile = board[y, x];
-            //        if(tile.GetTileType() == TileType.Piece)
-            //        {
-            //            if(y + 1 < height - 1)
-            //            {
-            //                Tile bellowTile = board[y + 1, x];
-            //                if (bellowTile.GetTileType() != TileType.Normal &&
-            //                    bellowTile.GetTileType() != TileType.Transparent)
-            //                {
-            //                    continue;
-            //                }
-            //                bellowTile.SetTileType(tile.GetTileType());
-            //                bellowTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
-            //                tile.SetTileType(TileType.Normal);
-
-
-            //                //board[y + 1, x] = tile;
-            //                //tile.SetTileType(TileType.Normal);
-            //            }
-
-            //        }
-            //    }
-            //}
-        
+        return pieceTuple.Item1 != null;
     }
-
-    private void MovePieceLeft()
+    public void MovePieceDown()
     {
-        foreach (Piece piece in pieceDict.Keys)
-        {
-            bool canMove = true;
-            Tile[,] tiles = pieceDict[piece];
-            int pieceHeight = tiles.GetLength(0);
-            int pieceWidth = tiles.GetLength(1);
+        if (!CanMove()) return;
+        bool canMove = true;
+        Tile[,] tiles = pieceTuple.Item2;
+        int pieceHeight = tiles.GetLength(0);
+        int pieceWidth = tiles.GetLength(1);
 
-            // first pass to simulate
+        // first pass to simulate
+        for (int y = pieceHeight - 1; y >= 0 && canMove; y--)
+        {
+            //string st = "";
             for (int x = 0; x < pieceWidth && canMove; x++)
             {
-                //string st = "";
-                for (int y = 0; y < pieceHeight && canMove; y++)
+                Tile tile = tiles[y, x];
+                //st += coord.ToString() + ", ";
+                if (tile == null) continue;
+
+                Vector2Int coord = tileToCoord[tile];
+                if (tile.GetTileType() == TileType.Piece)
                 {
-                    Tile tile = tiles[y, x];
-                    //st += coord.ToString() + ", ";
-                    if (tile == null) continue;
-
-                    Vector2Int coord = tileToCoord[tile];
-                    if (tile.GetTileType() == TileType.Piece)
+                    if (coord.y + 1 < height - 1)
                     {
-                        if (coord.x - 1 >= 0)
+                        Tile belowTile = coordToTile[new Vector2Int(coord.x, coord.y + 1)];
+
+                        //Debug.Log(tile.coord + " " + belowTile.coord);
+                        if (belowTile.GetTileType() == TileType.Wall || belowTile.GetTileType() == TileType.LevelPiece)
                         {
-                            Tile leftTile = coordToTile[new Vector2Int(coord.x - 1, coord.y)];
-
-                            //Debug.Log(tile.coord + " " + belowTile.coord);
-                            if (leftTile.GetTileType() == TileType.Wall || leftTile.GetTileType() == TileType.LevelPiece)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                            if (leftTile.GetTileType() != TileType.Normal &&
-                                leftTile.GetTileType() != TileType.Transparent)
-                            {
-                                continue;
-                            }
-
+                            canMove = false;
+                            break;
                         }
+                        if (belowTile.GetTileType() != TileType.Normal &&
+                            belowTile.GetTileType() != TileType.Transparent)
+                        {
+                            continue;
+                        }
+
                     }
                 }
-                //Debug.Log(st);
             }
-            if (!canMove) continue;
+            //Debug.Log(st);
+        }
+        if (!canMove) return;
 
+        for (int y = pieceHeight - 1; y >= 0 && canMove; y--)
+        {
+            //string st = "";
             for (int x = 0; x < pieceWidth && canMove; x++)
             {
-                //string st = "";
-                for (int y = 0; y < pieceHeight && canMove; y++)
+                Tile tile = tiles[y, x];
+                //st += coord.ToString() + ", ";
+                if (tile == null) continue;
+
+                Vector2Int coord = tileToCoord[tile];
+                if (tile.GetTileType() == TileType.Piece)
                 {
-                    Tile tile = tiles[y, x];
-                    //st += coord.ToString() + ", ";
-                    if (tile == null) continue;
-
-                    Vector2Int coord = tileToCoord[tile];
-                    if (tile.GetTileType() == TileType.Piece)
+                    //IsContain(tiles, tile)
+                    if (coord.y + 1 < height - 1)
                     {
-                        if (coord.x - 1 >= 0)
+                        Tile belowTile = coordToTile[new Vector2Int(coord.x, coord.y + 1)];
+                        //Debug.Log(tile.coord + " " + belowTile.coord);
+                        if (belowTile.GetTileType() != TileType.Normal &&
+                            belowTile.GetTileType() != TileType.Transparent)
                         {
-                            Tile leftTile = coordToTile[new Vector2Int(coord.x - 1, coord.y)];
-
-                            //Debug.Log(tile.coord + " " + belowTile.coord);
-                            if (leftTile.GetTileType() == TileType.Wall || leftTile.GetTileType() == TileType.LevelPiece)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                            if (leftTile.GetTileType() != TileType.Normal &&
-                                leftTile.GetTileType() != TileType.Transparent)
-                            {
-                                continue;
-                            }
-                            leftTile.SetTileType(tile.GetTileType());
-                            leftTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
-                            tiles[y, x] = leftTile;
-                            tile.SetTileType(TileType.Normal);
+                            continue;
                         }
+                        belowTile.SetTileType(tile.GetTileType());
+                        belowTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
+                        tiles[y, x] = belowTile;
+                        tile.SetTileType(TileType.Normal);
+
                     }
                 }
-                //Debug.Log(st);
             }
+        }
+
+
+
+        //for(int y = height - 1; y >=0; y--)
+        //{
+        //    for(int x = 0; x < width; x++)
+        //    {
+        //        Tile tile = board[y, x];
+        //        if(tile.GetTileType() == TileType.Piece)
+        //        {
+        //            if(y + 1 < height - 1)
+        //            {
+        //                Tile bellowTile = board[y + 1, x];
+        //                if (bellowTile.GetTileType() != TileType.Normal &&
+        //                    bellowTile.GetTileType() != TileType.Transparent)
+        //                {
+        //                    continue;
+        //                }
+        //                bellowTile.SetTileType(tile.GetTileType());
+        //                bellowTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
+        //                tile.SetTileType(TileType.Normal);
+
+
+        //                //board[y + 1, x] = tile;
+        //                //tile.SetTileType(TileType.Normal);
+        //            }
+
+        //        }
+        //    }
+        //}
+        for (int i = 0; i < height; i++)
+        {
+            ClearRow(i);
         }
     }
 
-    private void MovePieceRight()
+    public void MovePieceLeft()
     {
-        foreach (Piece piece in pieceDict.Keys)
+        if (!CanMove()) return;
+        bool canMove = true;
+        Tile[,] tiles = pieceTuple.Item2;
+        int pieceHeight = tiles.GetLength(0);
+        int pieceWidth = tiles.GetLength(1);
+
+        // first pass to simulate
+        for (int x = 0; x < pieceWidth && canMove; x++)
         {
-            bool canMove = true;
-            Tile[,] tiles = pieceDict[piece];
-            int pieceHeight = tiles.GetLength(0);
-            int pieceWidth = tiles.GetLength(1);
-
-            // first pass to simulate
-            for (int x = pieceWidth - 1; x >= 0 && canMove; x--)
+            //string st = "";
+            for (int y = 0; y < pieceHeight && canMove; y++)
             {
-                //string st = "";
-                for (int y = 0; y < pieceHeight && canMove; y++)
+                Tile tile = tiles[y, x];
+                //st += coord.ToString() + ", ";
+                if (tile == null) continue;
+
+                Vector2Int coord = tileToCoord[tile];
+                if (tile.GetTileType() == TileType.Piece)
                 {
-                    Tile tile = tiles[y, x];
-                    //st += coord.ToString() + ", ";
-                    if (tile == null) continue;
-
-                    Vector2Int coord = tileToCoord[tile];
-                    if (tile.GetTileType() == TileType.Piece)
+                    if (coord.x - 1 >= 0)
                     {
-                        if (coord.x - 1 >= 0)
+                        Tile leftTile = coordToTile[new Vector2Int(coord.x - 1, coord.y)];
+
+                        //Debug.Log(tile.coord + " " + belowTile.coord);
+                        if (leftTile.GetTileType() == TileType.Wall || leftTile.GetTileType() == TileType.LevelPiece)
                         {
-                            Tile rightTile = coordToTile[new Vector2Int(coord.x + 1, coord.y)];
-
-                            //Debug.Log(tile.coord + " " + belowTile.coord);
-                            if (rightTile.GetTileType() == TileType.Wall || rightTile.GetTileType() == TileType.LevelPiece)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                            if (rightTile.GetTileType() != TileType.Normal &&
-                                rightTile.GetTileType() != TileType.Transparent)
-                            {
-                                continue;
-                            }
-
+                            canMove = false;
+                            break;
                         }
+                        if (leftTile.GetTileType() != TileType.Normal &&
+                            leftTile.GetTileType() != TileType.Transparent)
+                        {
+                            continue;
+                        }
+
                     }
                 }
-                //Debug.Log(st);
             }
-            if (!canMove) continue;
+            //Debug.Log(st);
+        }
+        if (!canMove) return;
 
-            for (int x = pieceWidth - 1; x >= 0 && canMove; x--)
+        for (int x = 0; x < pieceWidth && canMove; x++)
+        {
+            //string st = "";
+            for (int y = 0; y < pieceHeight && canMove; y++)
             {
-                //string st = "";
-                for (int y = 0; y < pieceHeight && canMove; y++)
+                Tile tile = tiles[y, x];
+                //st += coord.ToString() + ", ";
+                if (tile == null) continue;
+
+                Vector2Int coord = tileToCoord[tile];
+                if (tile.GetTileType() == TileType.Piece)
                 {
-                    Tile tile = tiles[y, x];
-                    //st += coord.ToString() + ", ";
-                    if (tile == null) continue;
-
-                    Vector2Int coord = tileToCoord[tile];
-                    if (tile.GetTileType() == TileType.Piece)
+                    if (coord.x - 1 >= 0)
                     {
-                        if (coord.x - 1 >= 0)
-                        {
-                            Tile rightTile = coordToTile[new Vector2Int(coord.x + 1, coord.y)];
+                        Tile leftTile = coordToTile[new Vector2Int(coord.x - 1, coord.y)];
 
-                            //Debug.Log(tile.coord + " " + belowTile.coord);
-                            if (rightTile.GetTileType() == TileType.Wall || rightTile.GetTileType() == TileType.LevelPiece)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                            if (rightTile.GetTileType() != TileType.Normal &&
-                                rightTile.GetTileType() != TileType.Transparent)
-                            {
-                                continue;
-                            }
-                            rightTile.SetTileType(tile.GetTileType());
-                            rightTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
-                            tiles[y, x] = rightTile;
-                            tile.SetTileType(TileType.Normal);
+                        //Debug.Log(tile.coord + " " + belowTile.coord);
+                        if (leftTile.GetTileType() == TileType.Wall || leftTile.GetTileType() == TileType.LevelPiece)
+                        {
+                            canMove = false;
+                            break;
                         }
+                        if (leftTile.GetTileType() != TileType.Normal &&
+                            leftTile.GetTileType() != TileType.Transparent)
+                        {
+                            continue;
+                        }
+                        leftTile.SetTileType(tile.GetTileType());
+                        leftTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
+                        tiles[y, x] = leftTile;
+                        tile.SetTileType(TileType.Normal);
                     }
                 }
-                //Debug.Log(st);
             }
+            //Debug.Log(st);
+        }
+        for (int i = 0; i < height; i++)
+        {
+            ClearRow(i);
+        }
+    }
+
+    public void MovePieceRight()
+    {
+        if (!CanMove()) return;
+        bool canMove = true;
+        Tile[,] tiles = pieceTuple.Item2;
+        int pieceHeight = tiles.GetLength(0);
+        int pieceWidth = tiles.GetLength(1);
+
+        // first pass to simulate
+        for (int x = pieceWidth - 1; x >= 0 && canMove; x--)
+        {
+            //string st = "";
+            for (int y = 0; y < pieceHeight && canMove; y++)
+            {
+                Tile tile = tiles[y, x];
+                //st += coord.ToString() + ", ";
+                if (tile == null) continue;
+
+                Vector2Int coord = tileToCoord[tile];
+                if (tile.GetTileType() == TileType.Piece)
+                {
+                    if (coord.x - 1 >= 0)
+                    {
+                        Tile rightTile = coordToTile[new Vector2Int(coord.x + 1, coord.y)];
+
+                        //Debug.Log(tile.coord + " " + belowTile.coord);
+                        if (rightTile.GetTileType() == TileType.Wall || rightTile.GetTileType() == TileType.LevelPiece)
+                        {
+                            canMove = false;
+                            break;
+                        }
+                        if (rightTile.GetTileType() != TileType.Normal &&
+                            rightTile.GetTileType() != TileType.Transparent)
+                        {
+                            continue;
+                        }
+
+                    }
+                }
+            }
+            //Debug.Log(st);
+        }
+        if (!canMove) return;
+
+        for (int x = pieceWidth - 1; x >= 0 && canMove; x--)
+        {
+            //string st = "";
+            for (int y = 0; y < pieceHeight && canMove; y++)
+            {
+                Tile tile = tiles[y, x];
+                //st += coord.ToString() + ", ";
+                if (tile == null) continue;
+
+                Vector2Int coord = tileToCoord[tile];
+                if (tile.GetTileType() == TileType.Piece)
+                {
+                    if (coord.x - 1 >= 0)
+                    {
+                        Tile rightTile = coordToTile[new Vector2Int(coord.x + 1, coord.y)];
+
+                        //Debug.Log(tile.coord + " " + belowTile.coord);
+                        if (rightTile.GetTileType() == TileType.Wall || rightTile.GetTileType() == TileType.LevelPiece)
+                        {
+                            canMove = false;
+                            break;
+                        }
+                        if (rightTile.GetTileType() != TileType.Normal &&
+                            rightTile.GetTileType() != TileType.Transparent)
+                        {
+                            continue;
+                        }
+                        rightTile.SetTileType(tile.GetTileType());
+                        rightTile.SetCorrespondingPiece(tile.GetCorrespondingPiece());
+                        tiles[y, x] = rightTile;
+                        tile.SetTileType(TileType.Normal);
+                    }
+                }
+            }
+            //Debug.Log(st);
+        }
+        for (int i = 0; i < height; i++)
+        {
+            ClearRow(i);
         }
     }
 

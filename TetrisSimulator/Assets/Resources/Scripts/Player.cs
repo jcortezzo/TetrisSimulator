@@ -23,8 +23,8 @@ public class Player : MonoBehaviour
         SimpleMouseOver();
         if (Input.GetMouseButtonDown(0) && selection != null)
         {
-            Debug.Log(tempPieceForTesting);
-            Debug.Log(selection);
+            //Debug.Log(tempPieceForTesting);
+            //Debug.Log(selection);
             
             Board.Instance.PlacePiece(/*pieces.Dequeue()*/ Instantiate(tempPieceForTesting), selection);
         }

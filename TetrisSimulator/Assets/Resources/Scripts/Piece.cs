@@ -18,7 +18,7 @@ public class Piece : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        Debug.Log(this);
+        //Debug.Log(this);
     }
 
     // Update is called once per frame

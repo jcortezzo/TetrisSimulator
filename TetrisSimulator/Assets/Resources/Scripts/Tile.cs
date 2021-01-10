@@ -99,6 +99,11 @@ public class Tile : MonoBehaviour
         previousColor = sr.color;
     }
 
+    public TileType GetTileType()
+    {
+        return type;
+    }
+
     public void Select()
     {
         selected = true;

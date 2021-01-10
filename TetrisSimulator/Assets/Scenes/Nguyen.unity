@@ -222,6 +222,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: f5a1e16798165914199bfa898c7c8866,
         type: 3}
+    - target: {fileID: 528504530855033856, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
+        type: 3}
+      propertyPath: map
+      value: 
+      objectReference: {fileID: 21300000, guid: 51c2174aea1f04443b58422093552c82,
+        type: 3}
+    - target: {fileID: 528504530855033856, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
+        type: 3}
+      propertyPath: ticTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 528504530855033857, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -296,6 +307,12 @@ PrefabInstance:
       propertyPath: tempPieceForTesting
       value: 
       objectReference: {fileID: 2889388475799220584, guid: e1b94ce4d54dbfb4884c4ace44cccdc2,
+        type: 3}
+    - target: {fileID: 2742810339314269704, guid: 20d5bce07ea700b4485b2a88ac485060,
+        type: 3}
+      propertyPath: piecePrefab
+      value: 
+      objectReference: {fileID: 2889388475799220585, guid: e1b94ce4d54dbfb4884c4ace44cccdc2,
         type: 3}
     - target: {fileID: 2742810339314269705, guid: 20d5bce07ea700b4485b2a88ac485060,
         type: 3}

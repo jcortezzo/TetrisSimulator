@@ -8,7 +8,7 @@ public class Board : MonoBehaviour
 
     [SerializeField] private Tile[,] board;
     [SerializeField] private Tile tilePrefab;
-    [SerializeField] Sprite sprite;
+    [SerializeField] Sprite map;
 
     [SerializeField] public Dictionary<Piece, Vector2Int> piece;
 
@@ -24,6 +24,8 @@ public class Board : MonoBehaviour
     ISet<Tile> previewedTiles;
 
     //public Piece piece;
+    [SerializeField] private float ticTime;
+    [SerializeField] private float elapsedTicTime;
 
     private void Awake()
     {
@@ -41,11 +43,12 @@ public class Board : MonoBehaviour
         tileToCoord = new Dictionary<Tile, Vector2Int>();
         coordToTile = new Dictionary<Vector2Int, Tile>();
 
+
         previewedTiles = new HashSet<Tile>();
 
-        if(sprite != null)
+        if(map != null)
         {
-            GenerateBoard(sprite.texture);
+            GenerateBoard(map.texture);
         } else
         {
             GenerateBoard();
@@ -93,8 +96,9 @@ public class Board : MonoBehaviour
         if (board == null) return;
         Vector2Int placementPos = tileToCoord[t];
 
+
         Tile[,] copyBoard = board.Clone() as Tile[,];
-        Debug.Log(p.boundingBox);
+        //Debug.Log(p.boundingBox);
 
         bool canPlace = true;
 
@@ -167,20 +171,20 @@ public class Board : MonoBehaviour
 
     public Tile[,] GenerateBoard(Texture2D levelTexture)
     {
-        height = levelTexture.width;
-        width = levelTexture.height;
+        width = levelTexture.width;
+        height = levelTexture.height;
         board = new Tile[height, width];
-        Tile[,] newBoard = new Tile[levelTexture.width, levelTexture.height];
-        
+        Tile[,] newBoard = new Tile[height, width];
+
         // 0,0 of the texture is at bottom left corner
-        for(int x = 0; x < levelTexture.width; x++)
+        for(int y = height - 1; y >= 0; y--)
         {
-            Vector2 tilePosition = this.transform.position + new Vector3(x, 0, 0);
-            for (int y = levelTexture.height - 1; y >= 0 ; y--)
+            Vector2 tilePosition = this.transform.position - new Vector3(0, height - y, 0);
+            for (int x = 0; x < width ; x++)
             {
                 Tile tile = GenerateTileFromTexture2D(levelTexture, x, y, tilePosition);
-                tilePosition += Vector2.down;
-                board[x, y] = tile;
+                tilePosition += Vector2.right;
+                board[(height - 1) - y, x] = tile;
             }
         }
         return newBoard;
@@ -201,9 +205,58 @@ public class Board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(elapsedTicTime > ticTime)
+        {
+            elapsedTicTime = 0;
+            Tic();
+        }
+        elapsedTicTime += Time.deltaTime;
+
     }
 
+    private void Tic()
+    {
+        ClearRow(3);
+        //for (int i = 0; i < height; i++)
+        //{
+        //    ClearRow(i);
+        //}
+    }
+
+    private void ClearRow(int row)
+    {
+        // Wall, piece, piece, ... , piece, Wall//
+        TileType[] match = { TileType.Wall, TileType.Piece, TileType.Wall };
+        int i = 0;
+        for (;i < width; i++)
+        {
+            Tile tile = board[row, i];
+            if (i == 0)// first tile
+            {
+                if (tile.GetTileType() != match[0]) break;
+            }
+            
+            if (i == width - 1)
+            {
+                if (tile.GetTileType() != match[2]) break;
+            }
+            
+            if (i > 0 && i < width - 1)
+            {
+                if (tile.GetTileType() != match[1]) break;
+            }
+        }
+        if(i == width)
+        {
+            i = 1;
+            for (; i < width - 1; i++)
+            {
+                Tile tile = board[row, i];
+                tile.SetTileType(TileType.Normal);
+            }
+        }
+
+    }
 
     public Tile[,] GetBoard()
     {

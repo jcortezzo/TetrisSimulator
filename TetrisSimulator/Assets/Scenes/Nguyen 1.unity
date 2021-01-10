@@ -279,6 +279,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tempPieceForTesting: {fileID: 1323364668}
+  piecePrefab: {fileID: 2889388475799220585, guid: e1b94ce4d54dbfb4884c4ace44cccdc2,
+    type: 3}
+  currentPiece: {fileID: 0}
   layerMask:
     serializedVersion: 2
     m_Bits: 4294967295

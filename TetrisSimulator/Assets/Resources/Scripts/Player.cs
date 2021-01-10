@@ -34,23 +34,24 @@ public class Player : MonoBehaviour
         SimpleMouseOver();
         if (Input.GetMouseButtonDown(0) && selection != null)
         {
-            Debug.Log(tempPieceForTesting);
-            Debug.Log(selection);
+            //Debug.Log(tempPieceForTesting);
+            //Debug.Log(selection);
 
             //Board.Instance.PlacePiece(/*pieces.Dequeue()*/ Instantiate(tempPieceForTesting), selection);
             Board.Instance.PlacePiece(currentPiece, selection);
+            currentPiece = null;
         }
     }
 
     private void RotatePiece()
     {
         bool rotated = false;
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             currentPiece.RotateLeft();
             this.wasRotated = true;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.E))
         {
             currentPiece.RotateRight();
             this.wasRotated = true;

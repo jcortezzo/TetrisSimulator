@@ -17,6 +17,8 @@ public class Tile : MonoBehaviour
     private bool isPreview;
     private Piece correspondingPiece;
 
+    public Vector2Int coord;
+
     private void Awake()
     {
         sr = this.GetComponent<SpriteRenderer>();

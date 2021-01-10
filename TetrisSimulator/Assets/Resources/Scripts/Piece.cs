@@ -12,8 +12,6 @@ public class Piece : MonoBehaviour
     protected virtual void Awake()
     {
         boundingBox = new bool[boundingBoxHeight, boundingBoxWidth];
-        //boundingBox[0, 0] = true;
-        //boundingBox[0, 1] = true;
     }
 
     // Start is called before the first frame update

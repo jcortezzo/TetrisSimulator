@@ -104,7 +104,7 @@ public class Tile : MonoBehaviour
             type = TileType.Wall;
         } else
         {
-            type = TileType.Piece;
+            type = TileType.LevelPiece;
         }
         sr.color = color;
         previousColor = color;

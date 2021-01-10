@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
-    protected bool[,] boundingBox;
+    public bool[,] boundingBox;
     [SerializeField] protected int boundingBoxHeight;
     [SerializeField] protected int boundingBoxWidth;
 

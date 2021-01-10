@@ -5,19 +5,26 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
-    private Tile previousSelected;
+    private Tile selection;
+    [SerializeField] private Queue<Piece> pieces;
+    [SerializeField] private Piece tempPieceForTesting;
     public LayerMask layerMask;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        pieces = new Queue<Piece>();
+        pieces.Enqueue(new JPiece());
     }
 
     // Update is called once per frame
     void Update()
     {
         SimpleMouseOver();
+        if (Input.GetMouseButtonDown(0) && selection != null)
+        {
+            Board.Instance.PlacePiece(/*pieces.Dequeue()*/ tempPieceForTesting, selection);
+        }
     }
 
     private RaycastHit2D MouseRayCast()
@@ -38,12 +45,12 @@ public class Player : MonoBehaviour
             if (hit2.collider != null)
             {
                 Debug.Log("Raycast hit!");
-                if (previousSelected != null) previousSelected.Unselect();
+                if (selection != null) selection.Unselect();
                 Tile t = hit.transform.GetComponent<Tile>();
                 if (t != null)
                 {
                     //Debug.Log("Found Tile object");
-                    previousSelected = t;
+                    selection = t;
                     t.Select();
                 }
             }

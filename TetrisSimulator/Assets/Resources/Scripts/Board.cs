@@ -18,7 +18,10 @@ public class Board : MonoBehaviour
     public float discoTime;
     public bool isDisco;
 
-    public Piece piece;
+    private Dictionary<Tile, Vector2Int> tileToCoord;
+    private Dictionary<Vector2Int, Tile> coordToTile;
+
+    //public Piece piece;
 
     private void Awake()
     {
@@ -33,6 +36,9 @@ public class Board : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        tileToCoord = new Dictionary<Tile, Vector2Int>();
+        coordToTile = new Dictionary<Vector2Int, Tile>();
+
         if(sprite != null)
         {
             GenerateBoard(sprite.texture);
@@ -40,9 +46,40 @@ public class Board : MonoBehaviour
         {
             GenerateBoard();
         }
+        MapBoard();
         Tile center = GetCenterTile();
         Camera cam = Camera.main;
         cam.transform.position = new Vector3(center.transform.position.x, center.transform.position.y, cam.transform.position.z);
+    }
+
+    public void PlacePiece(Piece p, Tile t)
+    {
+        if (board == null) return;
+        Vector2Int placementPos = tileToCoord[t];
+
+        Tile[,] newBoard = new Tile[height, width];
+        for (int y = placementPos.y; y < p.boundingBox.GetLength(0) - placementPos.y; y++)
+        {
+            for (int x = placementPos.x; x < p.boundingBox.GetLength(1) - placementPos.x; x++)
+            {
+                Tile currTile = coordToTile[new Vector2Int(x, y)];
+                if (p.boundingBox[y - placementPos.y, x - placementPos.x])
+                {
+                    currTile.SetTileType(TileType.Piece);
+                }
+            }
+        }
+    }
+
+    private void MapBoard()
+    {
+        for (int y = 0; y < board.GetLength(0); y++)
+        for (int x = 0; x < board.GetLength(1); x++)
+        {
+            Vector2Int coord = new Vector2Int(x, y);
+            tileToCoord.Add(board[y, x], coord);
+            coordToTile.Add(coord, board[y, x]);
+        }
     }
 
     public void GenerateBoard()

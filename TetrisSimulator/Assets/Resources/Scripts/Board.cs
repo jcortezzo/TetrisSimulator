@@ -46,7 +46,7 @@ public class Board : MonoBehaviour
 
         previewedTiles = new HashSet<Tile>();
 
-        if(sprite != null)
+        if(map != null)
         {
             GenerateBoard(map.texture);
         } else

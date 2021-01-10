@@ -21,6 +21,8 @@ public class Board : MonoBehaviour
     private Dictionary<Tile, Vector2Int> tileToCoord;
     private Dictionary<Vector2Int, Tile> coordToTile;
 
+    ISet<Tile> previewedTiles;
+
     //public Piece piece;
 
     private void Awake()
@@ -39,6 +41,8 @@ public class Board : MonoBehaviour
         tileToCoord = new Dictionary<Tile, Vector2Int>();
         coordToTile = new Dictionary<Vector2Int, Tile>();
 
+        previewedTiles = new HashSet<Tile>();
+
         if(sprite != null)
         {
             GenerateBoard(sprite.texture);
@@ -50,6 +54,38 @@ public class Board : MonoBehaviour
         Tile center = GetCenterTile();
         Camera cam = Camera.main;
         cam.transform.position = new Vector3(center.transform.position.x, center.transform.position.y, cam.transform.position.z);
+    }
+
+    public void ClearPreviews()
+    {
+        foreach (Tile t in previewedTiles)
+        {
+            t.Unpreview();
+        }
+        previewedTiles.Clear();
+    }
+
+    public void PreviewPiece(Piece p, Tile t)
+    {
+        Vector2Int placementPos = tileToCoord[t];
+
+        for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
+        {
+            for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
+            {
+                Vector2Int coord = new Vector2Int(x, y);
+                if (!coordToTile.ContainsKey(coord))
+                {
+                    continue;
+                }
+                Tile currTile = coordToTile[coord];
+                if (p.boundingBox[y - placementPos.y, x - placementPos.x])
+                {
+                    currTile.Preview();
+                    previewedTiles.Add(currTile);
+                }
+            }
+        }
     }
 
     public void PlacePiece(Piece p, Tile t)

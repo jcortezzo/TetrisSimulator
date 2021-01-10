@@ -18,6 +18,8 @@ public class Tile : MonoBehaviour
     private bool selected;
     private Color previousColor;
 
+    private bool isPreview;
+
     private void Awake()
     {
         sr = this.GetComponent<SpriteRenderer>();
@@ -49,6 +51,24 @@ public class Tile : MonoBehaviour
         {
             sr.color = previousColor;
         }
+        if (isPreview)
+        {
+            sr.sprite = Resources.Load<Sprite>("Sprites/tile-1.png");
+        }
+        else
+        {
+            SetTexture(this.type);
+        }
+    }
+
+    public void Preview()
+    {
+        isPreview = true;
+    }
+
+    public void Unpreview()
+    {
+        isPreview = false;
     }
 
     public void SetTileType(TileType type)

@@ -9,6 +9,7 @@ public class SquarePiece : Piece
         this.boundingBox = new bool[,] { { true, true },
                                          { true, true } };
         ResetHeightAndWidth();
+        color = Color.yellow;
     }
 
 }

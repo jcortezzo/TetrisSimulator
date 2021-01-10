@@ -57,20 +57,51 @@ public class Board : MonoBehaviour
         if (board == null) return;
         Vector2Int placementPos = tileToCoord[t];
 
-        Tile[,] newBoard = new Tile[height, width];
+        Tile[,] copyBoard = board.Clone() as Tile[,];
         Debug.Log(p.boundingBox);
+
+        bool canPlace = true;
+
+        for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
+        {
+            for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
+            {
+                Vector2Int coord = new Vector2Int(x, y);
+                if (!coordToTile.ContainsKey(coord))
+                {
+                    canPlace = false;
+                    break;
+                }
+                Tile currTile = coordToTile[coord];
+                if (p.boundingBox[y - placementPos.y, x - placementPos.x] &&
+                    (currTile.GetTileType() != TileType.Normal && currTile.GetTileType() != TileType.Transparent))
+                {
+                    canPlace = false;
+                    break;
+                }
+            }
+        }
+
+        if (!canPlace) return;
+
         for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
         {
             for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
             {
                 Tile currTile = coordToTile[new Vector2Int(x, y)];
-                //if (p.boundingBox[y - placementPos.y, x - placementPos.x])
-                //{
+                if (p.boundingBox[y - placementPos.y, x - placementPos.x])
+                {
                     currTile.SetTileType(TileType.Piece);
-                //}
+                }
             }
         }
+        
     }
+
+    //private Tile[,] DeepCopyBoard()
+    //{
+    //    Tile[,] newBoard = new Tile[board.GetLength(0), board.GetLength(1)];
+    //}
 
     private void MapBoard()
     {

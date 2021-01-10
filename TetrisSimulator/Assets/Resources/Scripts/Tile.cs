@@ -108,6 +108,11 @@ public class Tile : MonoBehaviour
     {
         selected = false;
     }
+
+    public TileType GetTileType()
+    {
+        return type;
+    }
 }
 
 [System.Serializable]

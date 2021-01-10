@@ -43,7 +43,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a4cd63400a1604cbc6ce8206e111e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempPieceForTesting: {fileID: 0}
+  tempPieceForTesting: {fileID: 1509270269324427931, guid: 8eb8868b7a3e2f14e9592ca19c0a56c4,
+    type: 3}
+  selectedPiece: 0
+  piecePrefab:
+  - {fileID: 2889388475799220585, guid: 3e997124555007a42a006879c63e366a, type: 3}
+  - {fileID: 2889388475799220585, guid: 567793b714f75db49b583c1438aa3e76, type: 3}
+  - {fileID: 2889388475799220585, guid: 8eb8868b7a3e2f14e9592ca19c0a56c4, type: 3}
+  - {fileID: 2889388475799220585, guid: c709eef6eecf62d48b9727c0618e4011, type: 3}
+  - {fileID: 2889388475799220585, guid: 6e25b2d40b685474dbc2b3ee6d6bd932, type: 3}
+  - {fileID: 2889388475799220585, guid: e1b94ce4d54dbfb4884c4ace44cccdc2, type: 3}
+  - {fileID: 2889388475799220585, guid: 70da265a401d541449795d0f85e91007, type: 3}
+  currentPiece: {fileID: 0}
   layerMask:
     serializedVersion: 2
     m_Bits: 4294967295

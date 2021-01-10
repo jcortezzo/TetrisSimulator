@@ -98,7 +98,7 @@ public class Board : MonoBehaviour
 
 
         Tile[,] copyBoard = board.Clone() as Tile[,];
-        Debug.Log(p.boundingBox);
+        //Debug.Log(p.boundingBox);
 
         bool canPlace = true;
 
@@ -171,20 +171,20 @@ public class Board : MonoBehaviour
 
     public Tile[,] GenerateBoard(Texture2D levelTexture)
     {
-        height = levelTexture.width;
-        width = levelTexture.height;
+        width = levelTexture.width;
+        height = levelTexture.height;
         board = new Tile[height, width];
         Tile[,] newBoard = new Tile[height, width];
-        
+
         // 0,0 of the texture is at bottom left corner
-        for(int x = 0; x < height; x++)
+        for(int y = height - 1; y >= 0; y--)
         {
-            Vector2 tilePosition = this.transform.position + new Vector3(x, 0, 0);
-            for (int y = width - 1; y >= 0 ; y--)
+            Vector2 tilePosition = this.transform.position - new Vector3(0, height - y, 0);
+            for (int x = 0; x < width ; x++)
             {
                 Tile tile = GenerateTileFromTexture2D(levelTexture, x, y, tilePosition);
-                tilePosition += Vector2.down;
-                board[x, y] = tile;
+                tilePosition += Vector2.right;
+                board[(height - 1) - y, x] = tile;
             }
         }
         return newBoard;
@@ -216,7 +216,7 @@ public class Board : MonoBehaviour
 
     private void Tic()
     {
-        ClearRow(2);
+        ClearRow(3);
         //for (int i = 0; i < height; i++)
         //{
         //    ClearRow(i);
@@ -231,8 +231,6 @@ public class Board : MonoBehaviour
         for (;i < width; i++)
         {
             Tile tile = board[row, i];
-            Debug.Log(i);
-            Debug.Log(tile.GetTileType());
             if (i == 0)// first tile
             {
                 if (tile.GetTileType() != match[0]) break;
@@ -248,9 +246,14 @@ public class Board : MonoBehaviour
                 if (tile.GetTileType() != match[1]) break;
             }
         }
-        if(i == height)
+        if(i == width)
         {
-            Debug.Log("Clear row " + row);
+            i = 1;
+            for (; i < width - 1; i++)
+            {
+                Tile tile = board[row, i];
+                tile.SetTileType(TileType.Normal);
+            }
         }
 
     }

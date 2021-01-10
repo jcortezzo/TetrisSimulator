@@ -169,12 +169,12 @@ Camera:
     x: 0
     y: 0
     width: 1
-    height: 1
+    height: 2
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -211,6 +211,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 528504530855033856, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
+        type: 3}
+      propertyPath: isDisco
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 528504530855033856, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
+        type: 3}
+      propertyPath: sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f5a1e16798165914199bfa898c7c8866,
+        type: 3}
     - target: {fileID: 528504530855033857, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
         type: 3}
       propertyPath: m_LocalPosition.x

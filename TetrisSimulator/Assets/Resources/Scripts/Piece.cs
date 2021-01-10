@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
-    private bool[,] boundingBox;
-    [SerializeField] int boundingBoxHeight;
-    [SerializeField] int boundingBoxWidth;
+    public bool[,] boundingBox;
+    [SerializeField] protected int boundingBoxHeight;
+    [SerializeField] protected int boundingBoxWidth;
+    protected Color color;
 
-    void Awake()
+    protected virtual void Awake()
     {
         boundingBox = new bool[boundingBoxHeight, boundingBoxWidth];
         //boundingBox[0, 0] = true;
@@ -16,22 +17,27 @@ public class Piece : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
-        Debug.Log(this);
+        //Debug.Log(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            RotateLeft();
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            RotateRight();
-        }
+        //if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //{
+        //    RotateLeft();
+        //}
+        //else if (Input.GetKeyDown(KeyCode.RightArrow))
+        //{
+        //    RotateRight();
+        //}
+    }
+
+    public Color GetColor()
+    {
+        return color;
     }
 
     public Vector2Int GetCenter()
@@ -40,7 +46,7 @@ public class Piece : MonoBehaviour
                               this.boundingBox.GetLength(1) / 2);
     }
 
-    private void RotateRight()
+    public void RotateRight()
     {
         Transpose();
         for (int y = 0; y < this.boundingBox.GetLength(0); y++)
@@ -59,7 +65,7 @@ public class Piece : MonoBehaviour
         Debug.Log(this);
     }
 
-    private void RotateLeft()
+    public void RotateLeft()
     {
         Transpose();
         for (int x = 0; x < this.boundingBox.GetLength(1); x++)
@@ -78,6 +84,12 @@ public class Piece : MonoBehaviour
         Debug.Log(this);
     }
 
+    protected virtual void ResetHeightAndWidth()
+    {
+        this.boundingBoxHeight = this.boundingBox.GetLength(0);
+        this.boundingBoxWidth = this.boundingBox.GetLength(1);
+    }
+
     private void Transpose()
     {
         bool[,] transposed = new bool[this.boundingBox.GetLength(1), this.boundingBox.GetLength(0)];
@@ -91,18 +103,18 @@ public class Piece : MonoBehaviour
         this.boundingBox = transposed;
     }
 
-    public override string ToString()
-    {
-        string s = "\n";
-        for (int y = 0; y < this.boundingBox.GetLength(0); y++)
-        {
-            s += "[";
-            for (int x = 0; x < this.boundingBox.GetLength(1); x++)
-            {
-                s += this.boundingBox[y, x] + ", ";
-            }
-            s = s.Substring(0, s.Length - 2) + "]";// + "\n";
-        }
-        return s;
-    }
+    //public override string ToString()
+    //{
+    //    string s = "\n";
+    //    for (int y = 0; y < this.boundingBox.GetLength(0); y++)
+    //    {
+    //        s += "[";
+    //        for (int x = 0; x < this.boundingBox.GetLength(1); x++)
+    //        {
+    //            s += this.boundingBox[y, x] + ", ";
+    //        }
+    //        s = s.Substring(0, s.Length - 2) + "]";// + "\n";
+    //    }
+    //    return s;
+    //}
 }

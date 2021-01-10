@@ -4,5 +4,5 @@ using UnityEngine;
 
 public enum TileType
 {
-    Wall, Normal, Piece, Transparent
+    Wall, Normal, Piece, Transparent, Preview
 }

@@ -15,6 +15,13 @@ public class Tile : MonoBehaviour
 
     float timeElapsed;
 
+    private bool selected;
+    private Color previousColor;
+
+    private bool isPreview;
+
+    private Piece correspondingPiece;
+
     private void Awake()
     {
         sr = this.GetComponent<SpriteRenderer>();
@@ -39,11 +46,52 @@ public class Tile : MonoBehaviour
             }
             timeElapsed += Time.deltaTime;
         }
+        if (type != TileType.Piece)
+        {
+            SetCorrespondingPiece(null);
+        }
+        
+        if(selected)
+        {
+            sr.color = Color.red;
+        } else
+        {
+            sr.color = previousColor;
+        }
+        if (correspondingPiece != null)
+        {
+            //previousColor = sr.color;
+            sr.color = correspondingPiece.GetColor();
+        }
+        if (isPreview)
+        {
+            sr.sprite = Resources.Load<Sprite>("Sprites/tile-1.png");
+        }
+        else
+        {
+            SetTexture(this.type);
+        }
+    }
+
+    public void SetCorrespondingPiece(Piece p)
+    {
+        correspondingPiece = p;
+    }
+
+    public void Preview()
+    {
+        isPreview = true;
+    }
+
+    public void Unpreview()
+    {
+        isPreview = false;
     }
 
     public void SetTileType(TileType type)
     {
         this.type = type;
+        SetTexture(type);
     }
 
     public void SetTileTypeFromColor(Color color)
@@ -52,6 +100,7 @@ public class Tile : MonoBehaviour
         {
             type = TileType.Transparent;
             sr.color = Color.white;
+            previousColor = color;
             SetTexture(type);
             return;
         } else if (color == Color.white)
@@ -63,9 +112,9 @@ public class Tile : MonoBehaviour
         } else
         {
             type = TileType.Piece;
-            //Debug.LogError("Color unknown");
         }
         sr.color = color;
+        previousColor = color;
         SetTexture(type);
     }
 
@@ -76,9 +125,32 @@ public class Tile : MonoBehaviour
             if(t.type == type)
             {
                 sr.sprite = t.sprite;
+
+                // uhhh yeah idk
+                //if (type == TileType.Piece)
+                //{
+                //    sr.color = Color.blue;
+                //}
             }
         }
+        previousColor = sr.color;
     }
+
+    public TileType GetTileType()
+    {
+        return type;
+    }
+
+    public void Select()
+    {
+        selected = true;
+    }
+
+    public void Unselect()
+    {
+        selected = false;
+    }
+
 }
 
 [System.Serializable]

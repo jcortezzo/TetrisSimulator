@@ -9,6 +9,7 @@ public class JPiece : Piece
         this.boundingBox = new bool[,] { { true, false, false },
                                          { true, true,  true } };
         ResetHeightAndWidth();
+        this.color = Color.blue;
     }
 
 }

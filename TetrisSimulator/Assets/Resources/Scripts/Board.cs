@@ -133,6 +133,7 @@ public class Board : MonoBehaviour
                 {
                     currTile.SetTileType(TileType.Piece);
                     pieces.Add(currTile);
+                    currTile.SetCorrespondingPiece(p);
                 }
             }
         }
@@ -212,7 +213,10 @@ public class Board : MonoBehaviour
 
     private void Tic()
     {
-        ClearRow(3);
+        for(int i = 0; i < height; i++)
+        {
+            ClearRow(i);
+        }
 
         if(startGame)
         {
@@ -230,11 +234,15 @@ public class Board : MonoBehaviour
                 Tile tile = board[y, x];
                 if(tile.GetTileType() == TileType.Piece)
                 {
-                    if(y + 1 < height)
+                    if(y + 1 < height - 1)
                     {
                         Tile bellowTile = board[y + 1, x];
-                        tile.SetTileType(TileType.Normal);
                         bellowTile.SetTileType(tile.GetTileType());
+                        tile.SetTileType(TileType.Normal);
+                        
+
+                        //board[y + 1, x] = tile;
+                        //tile.SetTileType(TileType.Normal);
                     }
                     
                 }

@@ -5,20 +5,17 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     private SpriteRenderer sr;
-    private Color[] colors = { Color.red, Color.green, Color.blue, Color.yellow };
-    private static int counter = 0;
 
     [SerializeField] private TileTexture[] tileTexture;
     [SerializeField] private TileType type;
     public int Width { get; private set; }
     public int Height { get; private set; }
 
-    float timeElapsed;
-
     private bool selected;
     private Color previousColor;
 
     private bool isPreview;
+    private Piece correspondingPiece;
 
     private void Awake()
     {
@@ -35,15 +32,11 @@ public class Tile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Board.Instance.isDisco)
+        if (type != TileType.Piece)
         {
-            if (timeElapsed > Board.Instance.discoTime)
-            {
-                timeElapsed = 0;
-                sr.color = colors[Random.Range(0, colors.Length)];
-            }
-            timeElapsed += Time.deltaTime;
+            SetCorrespondingPiece(null);
         }
+        
         if(selected)
         {
             sr.color = Color.red;
@@ -51,6 +44,13 @@ public class Tile : MonoBehaviour
         {
             sr.color = previousColor;
         }
+
+        if (correspondingPiece != null)
+        {
+            //previousColor = sr.color;
+            sr.color = correspondingPiece.GetColor();
+        }
+        
         if (isPreview)
         {
             sr.sprite = Resources.Load<Sprite>("Sprites/tile-1.png");
@@ -59,6 +59,11 @@ public class Tile : MonoBehaviour
         {
             SetTexture(this.type);
         }
+    }
+
+    public void SetCorrespondingPiece(Piece p)
+    {
+        correspondingPiece = p;
     }
 
     public void Preview()
@@ -108,12 +113,18 @@ public class Tile : MonoBehaviour
             if(t.type == type)
             {
                 sr.sprite = t.sprite;
-
-                // uhhh yeah idk
                 if (type == TileType.Piece)
                 {
-                    sr.color = Color.blue;
+                    if (correspondingPiece == null) sr.color = Color.white;
+                    else sr.color = correspondingPiece.GetColor();
+                } else if(type == TileType.Normal || type == TileType.Transparent)
+                {
+                    sr.color = Color.white;
+                } else if(type == TileType.Wall)
+                {
+                    sr.color = Color.black;
                 }
+                previousColor = sr.color;
             }
         }
         previousColor = sr.color;

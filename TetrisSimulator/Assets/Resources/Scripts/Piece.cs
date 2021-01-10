@@ -24,14 +24,14 @@ public class Piece : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            RotateLeft();
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            RotateRight();
-        }
+        //if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //{
+        //    RotateLeft();
+        //}
+        //else if (Input.GetKeyDown(KeyCode.RightArrow))
+        //{
+        //    RotateRight();
+        //}
     }
 
     public Vector2Int GetCenter()

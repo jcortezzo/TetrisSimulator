@@ -48,11 +48,19 @@ public class Player : MonoBehaviour
             if (hit2.collider != null)
             {
                 //Debug.Log("Raycast hit!");
-                if (selection != null) selection.Unselect();
+                //if (selection != null) selection.Unselect();
                 Tile t = hit.transform.GetComponent<Tile>();
-                if (t != null)
+                if (t != null && selection != t)
                 {
                     //Debug.Log("Found Tile object");
+                    if (selection != null)
+                    {
+                        selection.Unselect();
+                        // TODO: Clear preview tiles
+                    }
+                    Board.Instance.ClearPreviews();
+                    Board.Instance.PreviewPiece(Instantiate(tempPieceForTesting), t);
+                    //t.Preview();
                     selection = t;
                     t.Select();
                 }

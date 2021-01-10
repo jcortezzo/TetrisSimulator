@@ -21,6 +21,8 @@ public class Board : MonoBehaviour
     private Dictionary<Tile, Vector2Int> tileToCoord;
     private Dictionary<Vector2Int, Tile> coordToTile;
 
+    ISet<Tile> previewedTiles;
+
     //public Piece piece;
     [SerializeField] private float ticTime;
     [SerializeField] private float elapsedTicTime;
@@ -41,7 +43,10 @@ public class Board : MonoBehaviour
         tileToCoord = new Dictionary<Tile, Vector2Int>();
         coordToTile = new Dictionary<Vector2Int, Tile>();
 
-        if(map != null)
+
+        previewedTiles = new HashSet<Tile>();
+
+        if(sprite != null)
         {
             GenerateBoard(map.texture);
         } else
@@ -54,13 +59,71 @@ public class Board : MonoBehaviour
         cam.transform.position = new Vector3(center.transform.position.x, center.transform.position.y, cam.transform.position.z);
     }
 
+    public void ClearPreviews()
+    {
+        foreach (Tile t in previewedTiles)
+        {
+            t.Unpreview();
+        }
+        previewedTiles.Clear();
+    }
+
+    public void PreviewPiece(Piece p, Tile t)
+    {
+        Vector2Int placementPos = tileToCoord[t];
+
+        for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
+        {
+            for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
+            {
+                Vector2Int coord = new Vector2Int(x, y);
+                if (!coordToTile.ContainsKey(coord))
+                {
+                    continue;
+                }
+                Tile currTile = coordToTile[coord];
+                if (p.boundingBox[y - placementPos.y, x - placementPos.x])
+                {
+                    currTile.Preview();
+                    previewedTiles.Add(currTile);
+                }
+            }
+        }
+    }
+
     public void PlacePiece(Piece p, Tile t)
     {
         if (board == null) return;
         Vector2Int placementPos = tileToCoord[t];
 
-        Tile[,] newBoard = new Tile[height, width];
-        //Debug.Log(p.boundingBox);
+
+        Tile[,] copyBoard = board.Clone() as Tile[,];
+        Debug.Log(p.boundingBox);
+
+        bool canPlace = true;
+
+        for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
+        {
+            for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
+            {
+                Vector2Int coord = new Vector2Int(x, y);
+                if (!coordToTile.ContainsKey(coord))
+                {
+                    canPlace = false;
+                    break;
+                }
+                Tile currTile = coordToTile[coord];
+                if (p.boundingBox[y - placementPos.y, x - placementPos.x] &&
+                    (currTile.GetTileType() != TileType.Normal && currTile.GetTileType() != TileType.Transparent))
+                {
+                    canPlace = false;
+                    break;
+                }
+            }
+        }
+
+        if (!canPlace) return;
+
         for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
         {
             for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
@@ -72,7 +135,13 @@ public class Board : MonoBehaviour
                 }
             }
         }
+        
     }
+
+    //private Tile[,] DeepCopyBoard()
+    //{
+    //    Tile[,] newBoard = new Tile[board.GetLength(0), board.GetLength(1)];
+    //}
 
     private void MapBoard()
     {

@@ -104,6 +104,8 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 745aac4629f998746b5ec3211a44cb87, type: 3}
   - type: 3
     sprite: {fileID: 21300000, guid: aedaf35d4ada53c48abbab1b98a78f51, type: 3}
+  - type: 4
+    sprite: {fileID: 21300000, guid: e4d63827a449c9747a54f5d20bc1fcd8, type: 3}
   type: 0
 --- !u!61 &327179514
 BoxCollider2D:

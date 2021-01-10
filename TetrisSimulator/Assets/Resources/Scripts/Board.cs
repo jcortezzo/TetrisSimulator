@@ -58,6 +58,7 @@ public class Board : MonoBehaviour
         Vector2Int placementPos = tileToCoord[t];
 
         Tile[,] newBoard = new Tile[height, width];
+        Debug.Log(p.boundingBox);
         for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
         {
             for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)

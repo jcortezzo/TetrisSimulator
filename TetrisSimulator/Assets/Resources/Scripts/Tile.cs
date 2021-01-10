@@ -65,7 +65,6 @@ public class Tile : MonoBehaviour
             sr.color = Color.white;
             previousColor = color;
             SetTexture(type);
-
             return;
         } else if (color == Color.white)
         {
@@ -97,6 +96,7 @@ public class Tile : MonoBehaviour
                 }
             }
         }
+        previousColor = sr.color;
     }
 
     public void Select()

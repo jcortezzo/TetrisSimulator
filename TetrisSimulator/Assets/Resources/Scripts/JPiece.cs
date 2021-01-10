@@ -10,4 +10,5 @@ public class JPiece : Piece
                                          { true, true,  true } };
         ResetHeightAndWidth();
     }
+
 }

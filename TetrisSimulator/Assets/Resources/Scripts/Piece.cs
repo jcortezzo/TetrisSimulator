@@ -97,18 +97,18 @@ public class Piece : MonoBehaviour
         this.boundingBox = transposed;
     }
 
-    public override string ToString()
-    {
-        string s = "\n";
-        for (int y = 0; y < this.boundingBox.GetLength(0); y++)
-        {
-            s += "[";
-            for (int x = 0; x < this.boundingBox.GetLength(1); x++)
-            {
-                s += this.boundingBox[y, x] + ", ";
-            }
-            s = s.Substring(0, s.Length - 2) + "]";// + "\n";
-        }
-        return s;
-    }
+    //public override string ToString()
+    //{
+    //    string s = "\n";
+    //    for (int y = 0; y < this.boundingBox.GetLength(0); y++)
+    //    {
+    //        s += "[";
+    //        for (int x = 0; x < this.boundingBox.GetLength(1); x++)
+    //        {
+    //            s += this.boundingBox[y, x] + ", ";
+    //        }
+    //        s = s.Substring(0, s.Length - 2) + "]";// + "\n";
+    //    }
+    //    return s;
+    //}
 }

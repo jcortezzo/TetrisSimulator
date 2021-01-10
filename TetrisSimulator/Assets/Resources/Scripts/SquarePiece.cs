@@ -10,4 +10,5 @@ public class SquarePiece : Piece
                                          { true, true } };
         ResetHeightAndWidth();
     }
+
 }

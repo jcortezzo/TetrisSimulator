@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         pieces = new Queue<Piece>();
-        pieces.Enqueue(new JPiece());
+        //pieces.Enqueue(new JPiece());
     }
 
     // Update is called once per frame
@@ -23,7 +23,10 @@ public class Player : MonoBehaviour
         SimpleMouseOver();
         if (Input.GetMouseButtonDown(0) && selection != null)
         {
-            Board.Instance.PlacePiece(/*pieces.Dequeue()*/ tempPieceForTesting, selection);
+            Debug.Log(tempPieceForTesting);
+            Debug.Log(selection);
+            
+            Board.Instance.PlacePiece(/*pieces.Dequeue()*/ Instantiate(tempPieceForTesting), selection);
         }
     }
 
@@ -44,7 +47,7 @@ public class Player : MonoBehaviour
             RaycastHit2D hit2 = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
             if (hit2.collider != null)
             {
-                Debug.Log("Raycast hit!");
+                //Debug.Log("Raycast hit!");
                 if (selection != null) selection.Unselect();
                 Tile t = hit.transform.GetComponent<Tile>();
                 if (t != null)

@@ -10,13 +10,15 @@ public class Board : MonoBehaviour
     [SerializeField] private Tile tilePrefab;
     [SerializeField] Sprite map;
 
-    [SerializeField] public Dictionary<Piece, Vector2Int> piece;
+    [SerializeField] public List<Tile> pieces;
 
     public int width;
     public int height;
 
     public float discoTime;
     public bool isDisco;
+
+    public bool startGame;
 
     private Dictionary<Tile, Vector2Int> tileToCoord;
     private Dictionary<Vector2Int, Tile> coordToTile;
@@ -27,6 +29,7 @@ public class Board : MonoBehaviour
     [SerializeField] private float ticTime;
     [SerializeField] private float elapsedTicTime;
 
+    
     private void Awake()
     {
         if(Instance == null)
@@ -95,10 +98,7 @@ public class Board : MonoBehaviour
     {
         if (board == null) return;
         Vector2Int placementPos = tileToCoord[t];
-
-
         Tile[,] copyBoard = board.Clone() as Tile[,];
-        //Debug.Log(p.boundingBox);
 
         bool canPlace = true;
 
@@ -132,16 +132,12 @@ public class Board : MonoBehaviour
                 if (p.boundingBox[y - placementPos.y, x - placementPos.x])
                 {
                     currTile.SetTileType(TileType.Piece);
+                    pieces.Add(currTile);
                 }
             }
         }
-        
     }
 
-    //private Tile[,] DeepCopyBoard()
-    //{
-    //    Tile[,] newBoard = new Tile[board.GetLength(0), board.GetLength(1)];
-    //}
 
     private void MapBoard()
     {
@@ -217,10 +213,33 @@ public class Board : MonoBehaviour
     private void Tic()
     {
         ClearRow(3);
-        //for (int i = 0; i < height; i++)
-        //{
-        //    ClearRow(i);
-        //}
+
+        if(startGame)
+        {
+            MovePieceDown();
+        }
+
+    }
+
+    private void MovePieceDown()
+    {
+        for(int y = height - 1; y >=0; y--)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                Tile tile = board[y, x];
+                if(tile.GetTileType() == TileType.Piece)
+                {
+                    if(y + 1 < height)
+                    {
+                        Tile bellowTile = board[y + 1, x];
+                        tile.SetTileType(TileType.Normal);
+                        bellowTile.SetTileType(tile.GetTileType());
+                    }
+                    
+                }
+            }
+        }
     }
 
     private void ClearRow(int row)

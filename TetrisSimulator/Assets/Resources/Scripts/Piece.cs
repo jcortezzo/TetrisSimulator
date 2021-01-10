@@ -7,6 +7,7 @@ public class Piece : MonoBehaviour
     public bool[,] boundingBox;
     [SerializeField] protected int boundingBoxHeight;
     [SerializeField] protected int boundingBoxWidth;
+    protected Color color;
 
     protected virtual void Awake()
     {
@@ -32,6 +33,11 @@ public class Piece : MonoBehaviour
         //{
         //    RotateRight();
         //}
+    }
+
+    public Color GetColor()
+    {
+        return color;
     }
 
     public Vector2Int GetCenter()

@@ -20,6 +20,8 @@ public class Tile : MonoBehaviour
 
     private bool isPreview;
 
+    private Piece correspondingPiece;
+
     private void Awake()
     {
         sr = this.GetComponent<SpriteRenderer>();
@@ -44,12 +46,22 @@ public class Tile : MonoBehaviour
             }
             timeElapsed += Time.deltaTime;
         }
+        if (type != TileType.Piece)
+        {
+            SetCorrespondingPiece(null);
+        }
+        
         if(selected)
         {
             sr.color = Color.red;
         } else
         {
             sr.color = previousColor;
+        }
+        if (correspondingPiece != null)
+        {
+            //previousColor = sr.color;
+            sr.color = correspondingPiece.GetColor();
         }
         if (isPreview)
         {
@@ -59,6 +71,11 @@ public class Tile : MonoBehaviour
         {
             SetTexture(this.type);
         }
+    }
+
+    public void SetCorrespondingPiece(Piece p)
+    {
+        correspondingPiece = p;
     }
 
     public void Preview()
@@ -110,10 +127,10 @@ public class Tile : MonoBehaviour
                 sr.sprite = t.sprite;
 
                 // uhhh yeah idk
-                if (type == TileType.Piece)
-                {
-                    sr.color = Color.blue;
-                }
+                //if (type == TileType.Piece)
+                //{
+                //    sr.color = Color.blue;
+                //}
             }
         }
         previousColor = sr.color;

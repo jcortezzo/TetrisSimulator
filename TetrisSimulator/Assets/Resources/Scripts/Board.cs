@@ -132,6 +132,7 @@ public class Board : MonoBehaviour
                 if (p.boundingBox[y - placementPos.y, x - placementPos.x])
                 {
                     currTile.SetTileType(TileType.Piece);
+                    currTile.SetCorrespondingPiece(p);
                 }
             }
         }

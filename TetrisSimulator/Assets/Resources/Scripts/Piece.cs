@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
-    private bool[,] boundingBox;
-    [SerializeField] int boundingBoxHeight;
-    [SerializeField] int boundingBoxWidth;
+    protected bool[,] boundingBox;
+    [SerializeField] protected int boundingBoxHeight;
+    [SerializeField] protected int boundingBoxWidth;
 
-    void Awake()
+    protected virtual void Awake()
     {
         boundingBox = new bool[boundingBoxHeight, boundingBoxWidth];
         //boundingBox[0, 0] = true;
@@ -16,7 +16,7 @@ public class Piece : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         Debug.Log(this);
     }
@@ -40,7 +40,7 @@ public class Piece : MonoBehaviour
                               this.boundingBox.GetLength(1) / 2);
     }
 
-    private void RotateRight()
+    public void RotateRight()
     {
         Transpose();
         for (int y = 0; y < this.boundingBox.GetLength(0); y++)
@@ -59,7 +59,7 @@ public class Piece : MonoBehaviour
         Debug.Log(this);
     }
 
-    private void RotateLeft()
+    public void RotateLeft()
     {
         Transpose();
         for (int x = 0; x < this.boundingBox.GetLength(1); x++)
@@ -76,6 +76,12 @@ public class Piece : MonoBehaviour
             }
         }
         Debug.Log(this);
+    }
+
+    protected virtual void ResetHeightAndWidth()
+    {
+        this.boundingBoxHeight = this.boundingBox.GetLength(0);
+        this.boundingBoxWidth = this.boundingBox.GetLength(1);
     }
 
     private void Transpose()

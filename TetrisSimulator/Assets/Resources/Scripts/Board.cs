@@ -10,6 +10,8 @@ public class Board : MonoBehaviour
     [SerializeField] private Tile tilePrefab;
     [SerializeField] Sprite sprite;
 
+    [SerializeField] public Dictionary<Piece, Vector2Int> piece;
+
     public int width;
     public int height;
 

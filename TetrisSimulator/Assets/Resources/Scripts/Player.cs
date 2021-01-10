@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
     private Tile previousSelected;
     public LayerMask layerMask;
+
     // Start is called before the first frame update
     void Start()
     {

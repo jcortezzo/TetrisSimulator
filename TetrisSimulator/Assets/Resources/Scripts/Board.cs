@@ -10,7 +10,6 @@ public class Board : MonoBehaviour
     [SerializeField] private Tile tilePrefab;
     [SerializeField] Sprite map;
 
-    [SerializeField] public List<Tile> pieces;
     //[SerializeField] private Dictionary<Piece, Tile[,]> pieceDict;
     [SerializeField] private (Piece, Tile[,], ISet<Tile>) pieceTuple;
     public int width;
@@ -104,6 +103,7 @@ public class Board : MonoBehaviour
 
         bool canPlace = true;
 
+        ISet<Tile> newTilesSet = new HashSet<Tile>();
         for (int y = placementPos.y; y < p.boundingBox.GetLength(0) + placementPos.y; y++)
         {
             for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
@@ -122,31 +122,65 @@ public class Board : MonoBehaviour
                     canPlace = false;
                     break;
                 }
+                newTilesSet.Add(currTile);
             }
         }
 
-        if (!canPlace) return;
+        // check if any of the tile in new piece is neighboring an existing piece
+        ISet<Tile> pieceSet = pieceTuple.Item3;
+        bool isNeighbor = pieceSet == null;
 
-        Tile[,] tilesPiece = new Tile[p.boundingBox.GetLength(0), p.boundingBox.GetLength(1)];
+        foreach(Tile tile in newTilesSet)
+        {
+            if (isNeighbor) break; // all ready known that something is neighboring
+            Vector2Int currentCoord = tileToCoord[tile];
+
+            List<Vector2Int> neighborCoords = new List<Vector2Int>();
+            if (coordToTile.ContainsKey(currentCoord + Vector2Int.up)) neighborCoords.Add(currentCoord + Vector2Int.up);
+            if (coordToTile.ContainsKey(currentCoord + Vector2Int.down)) neighborCoords.Add(currentCoord + Vector2Int.down);
+            if (coordToTile.ContainsKey(currentCoord + Vector2Int.left)) neighborCoords.Add(currentCoord + Vector2Int.left);
+            if (coordToTile.ContainsKey(currentCoord + Vector2Int.right)) neighborCoords.Add(currentCoord + Vector2Int.right);
+
+            foreach(Vector2Int vec in neighborCoords)
+            {
+                Tile neighborT = coordToTile[vec];
+                if(neighborT.GetTileType() == TileType.Piece && pieceSet.Contains(neighborT))
+                {
+                    isNeighbor = true;
+                    break;
+                }
+            }
+        }
+
+        
+        if (!canPlace || !isNeighbor)
+        {
+            Destroy(p.gameObject);
+            return;
+        }
+
+        Tile[,] newTilesPiece = new Tile[p.boundingBox.GetLength(0), p.boundingBox.GetLength(1)];
+        ISet<Tile> newSetPiece = new HashSet<Tile>();
         //pieceDict[p] = tilesPiece;
         //pieceDict.Add(p, tilesPiece);
-        (Piece, Tile[,], ISet<Tile>) newTuple;
-        newTuple = (p, tilesPiece, new HashSet<Tile>());
+        (Piece, Tile[,], ISet<Tile>) newTuple = (p, newTilesPiece, newSetPiece);
+
         for (int y = placementPos.y, y1 = 0 ; y < p.boundingBox.GetLength(0) + placementPos.y; y++, y1++)
         {
             for (int x = placementPos.x, x1 = 0; x < p.boundingBox.GetLength(1) + placementPos.x; x++, x1++)
             {
                 Tile currTile = coordToTile[new Vector2Int(x, y)];
-                tilesPiece[y1, x1] = currTile;
+                newTilesPiece[y1, x1] = currTile;
                 if (p.boundingBox[y - placementPos.y, x - placementPos.x])
                 {
                     currTile.SetTileType(TileType.Piece);
-                    pieces.Add(currTile);
+                    newSetPiece.Add(currTile);
                     //tilesPiece[y1, x1] = currTile;
                     currTile.SetCorrespondingPiece(p);
                 }
             }
         }
+
         if (pieceTuple.Item1 == null) pieceTuple = newTuple;
         else
         {

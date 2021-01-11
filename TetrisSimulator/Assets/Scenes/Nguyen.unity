@@ -226,7 +226,7 @@ PrefabInstance:
         type: 3}
       propertyPath: map
       value: 
-      objectReference: {fileID: 21300000, guid: 51c2174aea1f04443b58422093552c82,
+      objectReference: {fileID: 21300000, guid: 8b364295a6399fb43ad3df910e8a1d4b,
         type: 3}
     - target: {fileID: 528504530855033856, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
         type: 3}
@@ -236,7 +236,7 @@ PrefabInstance:
     - target: {fileID: 528504530855033856, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
         type: 3}
       propertyPath: startGame
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 528504530855033857, guid: 6bb3a9b28ce452c4ab1141172fd3ba68,
         type: 3}

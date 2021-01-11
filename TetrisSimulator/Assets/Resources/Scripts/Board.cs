@@ -165,7 +165,7 @@ public class Board : MonoBehaviour
 
     private void TryCombinePiece(List<(Piece, Tile[,], ISet<Tile>)> pieces)
     {
-        int minX = 0, maxX = width - 1, minY = 0, maxY = height - 1;
+        int minX = width - 1, maxX = 0, minY = height - 1, maxY = 0;
         Piece initPiece = null;
 
         foreach((Piece, Tile[,], ISet<Tile>) pair in pieces)
@@ -418,12 +418,12 @@ public class Board : MonoBehaviour
                 Tile t = tiles[y, x];
                 Vector2Int coords = tileToCoord[t];
 
-                Vector2Int leftCoords = coords + dir;
-                if (!coordToTile.ContainsKey(leftCoords))
+                Vector2Int neighborCoord = coords + dir;
+                if (!coordToTile.ContainsKey(neighborCoord)) //checking if coordinate is valid in board
                 {
                     return false;
                 }
-                Tile neighborT = coordToTile[leftCoords];
+                Tile neighborT = coordToTile[neighborCoord];
                 TileType neighborType = neighborT.GetTileType();
 
                 if (neighborType == TileType.Wall || 

@@ -212,7 +212,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034384285}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a160d838ff8b4b4693ac20007e008c7, type: 3}
   m_Name: 
@@ -323,6 +323,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2742810339314269704, guid: 20d5bce07ea700b4485b2a88ac485060,
+        type: 3}
+      propertyPath: tLerp
+      value: 0.025
+      objectReference: {fileID: 0}
     - target: {fileID: 2742810339314269705, guid: 20d5bce07ea700b4485b2a88ac485060,
         type: 3}
       propertyPath: m_LocalPosition.x

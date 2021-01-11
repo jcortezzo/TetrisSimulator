@@ -100,7 +100,7 @@ public class Board : MonoBehaviour
             {
                 Vector2Int coord = new Vector2Int(x, y);
                 if (!coordToTile.ContainsKey(coord) ||
-                    coordToTile[coord].GetTileType() != TileType.Preview)
+                    coordToTile[coord].GetTileType() != TileType.Placeable)
                 {
                     ClearPreviews();
                     return;
@@ -340,10 +340,52 @@ public class Board : MonoBehaviour
         
         if (startGame)
         {
+            if (previewedTiles.Count != 0)
+            {
+                ClearPreviews();
+            }
             RemovePlaceable();
             MovePieceDown();
         }
 
+    }
+
+    private void LateUpdate()
+    {
+        MoveCamera();
+    }
+
+    public void MoveCamera()
+    {
+        if (startGame)
+        {
+            double yPos;
+            if (pieceTuple.Item1 == null)
+            {
+                yPos = Board.Instance.GetBoardTop() - 0.5f * player.cam.height;
+            }
+            else
+            {
+                Tile centerTile = pieceTuple.Item2[pieceTuple.Item2.GetLength(0) / 2, 
+                                                   pieceTuple.Item2.GetLength(1) / 2];
+                yPos = Mathf.Min(centerTile.transform.position.y, 
+                                 Board.Instance.GetBoardTop() - 0.5f * player.cam.height);
+            }
+
+            Debug.Log(pieceTuple.Item1);
+
+            if (yPos < Board.Instance.GetBoardBottom() + 0.5f * player.cam.height)
+            {
+                yPos = Board.Instance.GetBoardBottom() + 0.5 * player.cam.height;
+            }
+
+            Vector3 newPos = new Vector3(player.cam.camera.transform.position.x,
+                                         (float) yPos,
+                                         player.cam.camera.transform.position.z);
+            Vector3 lerpPos = Vector3.Lerp(player.cam.camera.transform.position, newPos, 0.025f);
+            //player.cam.camera.transform.position = lerpPos;
+            player.cam.camera.transform.position = newPos;
+        }
     }
 
     public void RemovePlaceable()

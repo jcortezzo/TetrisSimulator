@@ -329,6 +329,11 @@ public class Board : MonoBehaviour
         }
         elapsedTicTime += Time.deltaTime;
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            startGame = !startGame;
+        }
+
     }
 
     private void Tic()

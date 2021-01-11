@@ -17,6 +17,15 @@ public class Player : MonoBehaviour
 
     private bool wasRotated;
 
+    public CameraInfo cam;
+
+    public struct CameraInfo
+    {
+        public Camera camera;
+        public float height;
+        public float width;
+    }
+
     private void Awake()
     {
         selectedPiece = 0;  // just for testing
@@ -27,6 +36,10 @@ public class Player : MonoBehaviour
     void Start()
     {
         pieces = new Queue<Piece>();
+        cam.camera = Camera.main;
+        cam.height = 2f * cam.camera.orthographicSize;
+        cam.width = cam.height * cam.camera.aspect;
+
         
         //pieces.Enqueue(new JPiece());
     }
@@ -34,6 +47,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         SelectPiece();
         if (currentPiece == null)
         {
@@ -66,6 +80,28 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
             Board.Instance.MovePieceDown();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        MoveCamera();
+    }
+
+    private void MoveCamera()
+    {
+        if (!Board.Instance.startGame)
+        {
+            double yPos = Mathf.Min(cam.camera.ScreenToWorldPoint(Input.mousePosition).y,
+                                   Board.Instance.GetBoardTop() - 0.5f * cam.height);
+            if (yPos < Board.Instance.GetBoardBottom() + 0.5f * cam.height)
+            {
+                yPos = Board.Instance.GetBoardBottom() + 0.5 * cam.height;
+            }
+            cam.camera.transform.position = new Vector3(
+                    cam.camera.transform.position.x,
+                    (float) yPos,
+                    cam.camera.transform.position.z);
         }
     }
 

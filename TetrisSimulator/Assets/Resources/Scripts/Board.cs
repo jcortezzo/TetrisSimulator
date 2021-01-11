@@ -100,9 +100,11 @@ public class Board : MonoBehaviour
             for (int x = placementPos.x; x < p.boundingBox.GetLength(1) + placementPos.x; x++)
             {
                 Vector2Int coord = new Vector2Int(x, y);
-                if (!coordToTile.ContainsKey(coord))
+                if (!coordToTile.ContainsKey(coord) ||
+                    coordToTile[coord].GetTileType() != TileType.Preview)
                 {
-                    continue;
+                    ClearPreviews();
+                    return;
                 }
                 Tile currTile = coordToTile[coord];
                 if (p.boundingBox[y - placementPos.y, x - placementPos.x])

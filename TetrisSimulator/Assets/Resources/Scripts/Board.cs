@@ -12,7 +12,7 @@ public class Board : MonoBehaviour
 
     [SerializeField] public List<Tile> pieces;
     //[SerializeField] private Dictionary<Piece, Tile[,]> pieceDict;
-    [SerializeField] private (Piece, Tile[,]) pieceTuple;
+    [SerializeField] private (Piece, Tile[,], ISet<Tile>) pieceTuple;
     public int width;
     public int height;
 
@@ -129,8 +129,8 @@ public class Board : MonoBehaviour
         Tile[,] tilesPiece = new Tile[p.boundingBox.GetLength(0), p.boundingBox.GetLength(1)];
         //pieceDict[p] = tilesPiece;
         //pieceDict.Add(p, tilesPiece);
-        (Piece, Tile[,]) newTuple;
-        newTuple = (p, tilesPiece);
+        (Piece, Tile[,], ISet<Tile>) newTuple;
+        newTuple = (p, tilesPiece, new HashSet<Tile>());
         for (int y = placementPos.y, y1 = 0 ; y < p.boundingBox.GetLength(0) + placementPos.y; y++, y1++)
         {
             for (int x = placementPos.x, x1 = 0; x < p.boundingBox.GetLength(1) + placementPos.x; x++, x1++)
@@ -149,7 +149,7 @@ public class Board : MonoBehaviour
         if (pieceTuple.Item1 == null) pieceTuple = newTuple;
         else
         {
-            List<(Piece, Tile[,])> list = new List<(Piece, Tile[,])>();
+            List<(Piece, Tile[,], ISet<Tile>)> list = new List<(Piece, Tile[,], ISet<Tile>)>();
             list.Add(pieceTuple); list.Add(newTuple);
             TryCombinePiece(list);
         }
@@ -163,12 +163,12 @@ public class Board : MonoBehaviour
         //}
     }
 
-    private void TryCombinePiece(List<(Piece, Tile[,])> pieces)
+    private void TryCombinePiece(List<(Piece, Tile[,], ISet<Tile>)> pieces)
     {
         int minX = 0, maxX = width - 1, minY = 0, maxY = height - 1;
         Piece initPiece = null;
 
-        foreach((Piece, Tile[,]) pair in pieces)
+        foreach((Piece, Tile[,], ISet<Tile>) pair in pieces)
         {
             Piece piece = pair.Item1;
             if (initPiece == null) initPiece = piece;
@@ -188,6 +188,7 @@ public class Board : MonoBehaviour
 
         Tile[,] newPieceTiles = new Tile[lengthY, lengthX];
         Piece newPiece = initPiece;
+        ISet<Tile> tileSet = new HashSet<Tile>();
         newPiece.boundingBox = new bool[lengthY, lengthX];
         for (int y = minY, y1 = 0; y <= maxY; y++, y1++)
         {
@@ -196,10 +197,11 @@ public class Board : MonoBehaviour
                 Tile t = board[y, x];
                 newPieceTiles[y1, x1] = t;
                 newPiece.boundingBox[y1, x1] = t.GetTileType() == TileType.Piece;
+                tileSet.Add(t);
             }
         }
 
-        pieceTuple = (newPiece, newPieceTiles);
+        pieceTuple = (newPiece, newPieceTiles, tileSet);
 
     }
 
@@ -404,6 +406,88 @@ public class Board : MonoBehaviour
         }
     }
 
+    private bool IsValidMove(Vector2Int dir)
+    {
+        if (!CanMove()) return false;
+        Tile[,] tiles = pieceTuple.Item2;
+
+        for (int y = 0; y < tiles.GetLength(0); y++)
+        {
+            for (int x = 0; x < tiles.GetLength(1); x++)
+            {
+                Tile t = tiles[y, x];
+                Vector2Int coords = tileToCoord[t];
+
+                Vector2Int leftCoords = coords + dir;
+                if (!coordToTile.ContainsKey(leftCoords))
+                {
+                    return false;
+                }
+                Tile neighborT = coordToTile[leftCoords];
+                TileType neighborType = neighborT.GetTileType();
+
+                if (neighborType == TileType.Wall || 
+                    neighborType == TileType.LevelPiece)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    //public void MovePieceLeft()
+    //{
+    //    Vector2Int dir = Vector2Int.left;
+    //    if (!IsValidMove(dir))
+    //    {
+    //        Debug.Log("can't move");
+    //        return;
+    //    }
+    //    Debug.Log("can move");
+    //    Tile[,] tiles = pieceTuple.Item2;
+
+    //    // by column
+    //    for (int x = 0; x < tiles.GetLength(1); x++)
+    //    {
+    //        for (int y = 0; y < tiles.GetLength(0); y++)
+    //        {
+    //            // curr tile
+    //            Tile t = tiles[y, x];
+    //            Vector2Int coords = tileToCoord[t];
+    //            Vector2Int localCoords = new Vector2Int(x, y);
+    //            TileType currType = t.GetTileType();
+
+    //            // left tile
+    //            Vector2Int leftCoords = coords + dir;
+    //            Vector2Int leftLocalCoords = localCoords + dir;
+    //            // This should never happen
+    //            if (!coordToTile.ContainsKey(leftCoords))
+    //            {
+    //                Debug.LogError("TRIED TO MOVE BUT COULDN'T ABORT ABORT ABORT");
+    //                return;
+    //            }
+    //            Tile leftT = coordToTile[leftCoords];
+    //            TileType leftType = leftT.GetTileType();
+
+    //            // reassign
+    //            //leftT.SetTileType(currType);
+    //            //leftT.SetCorrespondingPiece(t.GetCorrespondingPiece());
+
+    //            //if (x == tiles.GetLength(1) - 1)
+    //            //{
+    //            //    t.SetTileType(TileType.Transparent);
+    //            //    t.SetCorrespondingPiece(null);
+    //            //}
+    //            leftT.SetTileType(t.GetTileType());
+    //            leftT.SetCorrespondingPiece(t.GetCorrespondingPiece());
+    //            tiles[y, x] = leftT;
+    //            t.SetTileType(TileType.Transparent);
+    //        }
+    //    }
+    //}
+
     public void MovePieceLeft()
     {
         if (!CanMove()) return;
@@ -413,40 +497,41 @@ public class Board : MonoBehaviour
         int pieceWidth = tiles.GetLength(1);
 
         // first pass to simulate
-        for (int x = 0; x < pieceWidth && canMove; x++)
-        {
-            //string st = "";
-            for (int y = 0; y < pieceHeight && canMove; y++)
-            {
-                Tile tile = tiles[y, x];
-                //st += coord.ToString() + ", ";
-                if (tile == null) continue;
+        //for (int x = pieceWidth - 1; x >= 0 && canMove; x--)
+        //{
+        //    //string st = "";
+        //    for (int y = 0; y < pieceHeight && canMove; y++)
+        //    {
+        //        Tile tile = tiles[y, x];
+        //        //st += coord.ToString() + ", ";
+        //        if (tile == null) continue;
 
-                Vector2Int coord = tileToCoord[tile];
-                if (tile.GetTileType() == TileType.Piece)
-                {
-                    if (coord.x - 1 >= 0)
-                    {
-                        Tile leftTile = coordToTile[new Vector2Int(coord.x - 1, coord.y)];
+        //        Vector2Int coord = tileToCoord[tile];
+        //        if (tile.GetTileType() == TileType.Piece)
+        //        {
+        //            if (coord.x - 1 >= 0)
+        //            {
+        //                Tile rightTile = coordToTile[new Vector2Int(coord.x - 1, coord.y)];
 
-                        //Debug.Log(tile.coord + " " + belowTile.coord);
-                        if (leftTile.GetTileType() == TileType.Wall || leftTile.GetTileType() == TileType.LevelPiece)
-                        {
-                            canMove = false;
-                            break;
-                        }
-                        if (leftTile.GetTileType() != TileType.Normal &&
-                            leftTile.GetTileType() != TileType.Transparent)
-                        {
-                            continue;
-                        }
+        //                //Debug.Log(tile.coord + " " + belowTile.coord);
+        //                if (rightTile.GetTileType() == TileType.Wall || rightTile.GetTileType() == TileType.LevelPiece)
+        //                {
+        //                    canMove = false;
+        //                    break;
+        //                }
+        //                if (rightTile.GetTileType() != TileType.Normal &&
+        //                    rightTile.GetTileType() != TileType.Transparent)
+        //                {
+        //                    continue;
+        //                }
 
-                    }
-                }
-            }
-            //Debug.Log(st);
-        }
-        if (!canMove) return;
+        //            }
+        //        }
+        //    }
+        //    //Debug.Log(st);
+        //}
+        //if (!canMove) return;
+        if (!IsValidMove(Vector2Int.left)) return;
 
         for (int x = 0; x < pieceWidth && canMove; x++)
         {

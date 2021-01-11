@@ -53,6 +53,11 @@ public class Tile : MonoBehaviour
             sr.color = correspondingPiece.GetColor();
         }
         
+        if (type == TileType.Placeable)
+        {
+            sr.color = Color.green;
+        }
+
         if (isPreview)
         {
             sr.sprite = Resources.Load<Sprite>("Sprites/tile-1.png");
@@ -98,13 +103,20 @@ public class Tile : MonoBehaviour
             previousColor = color;
             SetTexture(type);
             return;
-        } else if (color == Color.white)
+        }
+        else if (color == Color.white)
         {
             type = TileType.Normal;
-        } else if (color == Color.black)
+        }
+        else if (color == Color.black)
         {
             type = TileType.Wall;
-        } else
+        }
+        else if (color == Color.green)  // 0x00ff00
+        {
+            type = TileType.Placeable;
+        }
+        else
         {
             type = TileType.LevelPiece;
         }

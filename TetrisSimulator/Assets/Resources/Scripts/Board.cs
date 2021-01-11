@@ -116,7 +116,8 @@ public class Board : MonoBehaviour
                 }
                 Tile currTile = coordToTile[coord];
                 if (p.boundingBox[y - placementPos.y, x - placementPos.x] &&
-                    (currTile.GetTileType() != TileType.Normal && currTile.GetTileType() != TileType.Transparent))
+                    //(currTile.GetTileType() != TileType.Normal && currTile.GetTileType() != TileType.Transparent))
+                    (currTile.GetTileType() != TileType.Placeable))
                 {
                     canPlace = false;
                     break;
@@ -286,9 +287,21 @@ public class Board : MonoBehaviour
         
         if (startGame)
         {
+            RemovePlaceable();
             MovePieceDown();
         }
 
+    }
+
+    public void RemovePlaceable()
+    {
+        foreach (Tile t in tileToCoord.Keys)
+        {
+            if (t.GetTileType() == TileType.Placeable)
+            {
+                t.SetTileType(TileType.Transparent);
+            }
+        }
     }
 
     private bool CanMove()
@@ -419,7 +432,7 @@ public class Board : MonoBehaviour
                 Vector2Int coords = tileToCoord[t];
 
                 Vector2Int neighborCoord = coords + dir;
-                if (!coordToTile.ContainsKey(neighborCoord)) //checking if coordinate is valid in board
+                if (!coordToTile.ContainsKey(neighborCoord))  //checking if coordinate is valid in board
                 {
                     return false;
                 }

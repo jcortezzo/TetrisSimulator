@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
 
     public CameraInfo cam;
     public float tLerp;
+    public float cameraBoundHeight;
+
     public struct CameraInfo
     {
         public Camera camera;
@@ -40,7 +42,6 @@ public class Player : MonoBehaviour
         cam.height = 2f * cam.camera.orthographicSize;
         cam.width = cam.height * cam.camera.aspect;
 
-        
         //pieces.Enqueue(new JPiece());
     }
 
@@ -98,7 +99,13 @@ public class Player : MonoBehaviour
             {
                 yPos = Board.Instance.GetBoardBottom() + 0.5 * cam.height;
             }
-            
+
+            Vector3 camPos = cam.camera.transform.position;
+            Vector2 cameraBoundY = new Vector2(camPos.y - cameraBoundHeight, camPos.y + cameraBoundHeight);
+            Debug.LogFormat("cam {0}, mouse {1}", cameraBoundY, yPos);
+
+            if (yPos > cameraBoundY.x  && yPos < cameraBoundY.y) return;
+
             Vector3 newPos = new Vector3(cam.camera.transform.position.x,
                                         (float)yPos,
                                         cam.camera.transform.position.z);

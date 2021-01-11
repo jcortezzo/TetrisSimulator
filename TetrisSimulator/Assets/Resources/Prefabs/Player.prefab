@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a4cd63400a1604cbc6ce8206e111e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tempPieceForTesting: {fileID: 1509270269324427931, guid: 8eb8868b7a3e2f14e9592ca19c0a56c4,
+  tempPieceForTesting: {fileID: 2889388475799220584, guid: e1b94ce4d54dbfb4884c4ace44cccdc2,
     type: 3}
   selectedPiece: 0
   piecePrefab:
@@ -58,3 +58,4 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  tLerp: 0.025

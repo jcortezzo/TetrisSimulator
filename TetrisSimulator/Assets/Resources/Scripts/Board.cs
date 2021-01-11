@@ -705,6 +705,25 @@ public class Board : MonoBehaviour
                 Tile tile = board[row, i];
                 tile.SetTileType(TileType.Normal);
             }
+            Piece p = pieceTuple.Item1;
+            Tile[,] tiles = pieceTuple.Item2;
+            ISet<Tile> set = pieceTuple.Item3;
+            if (tiles.GetLength(0) - 1 == 0)
+            {
+                pieceTuple = (null, null, null);
+                return;
+            }
+            Tile[,] newTiles = new Tile[tiles.GetLength(0) - 1, tiles.GetLength(1)];
+            ISet<Tile> newSet = new HashSet<Tile>();
+            for (int x = 0; x < newTiles.GetLength(0); x++)
+            {
+                for(int y = 0; y < newTiles.GetLength(1); y++)
+                {
+                    newTiles[x, y] = tiles[x, y];
+                    newSet.Add(tiles[x, y]);
+                }
+            }
+            pieceTuple = (p, newTiles, newSet);
         }
 
     }

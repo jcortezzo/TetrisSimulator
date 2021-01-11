@@ -287,9 +287,21 @@ public class Board : MonoBehaviour
         
         if (startGame)
         {
+            RemovePlaceable();
             MovePieceDown();
         }
 
+    }
+
+    public void RemovePlaceable()
+    {
+        foreach (Tile t in tileToCoord.Keys)
+        {
+            if (t.GetTileType() == TileType.Placeable)
+            {
+                t.SetTileType(TileType.Transparent);
+            }
+        }
     }
 
     private bool CanMove()

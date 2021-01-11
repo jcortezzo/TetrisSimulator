@@ -32,6 +32,8 @@ public class Board : MonoBehaviour
     [SerializeField] private float ticTime;
     [SerializeField] private float elapsedTicTime;
 
+    Player player;
+
     
     private void Awake()
     {
@@ -59,10 +61,25 @@ public class Board : MonoBehaviour
         {
             GenerateBoard();
         }
+        player = FindObjectOfType<Player>();
         MapBoard();
         Tile center = GetCenterTile();
-        Camera cam = Camera.main;
-        cam.transform.position = new Vector3(center.transform.position.x, center.transform.position.y, cam.transform.position.z);
+        //Camera cam = Camera.main;
+        //cam.transform.position = new Vector3(center.transform.position.x, center.transform.position.y, cam.transform.position.z);
+
+        player.cam.camera.transform.position = new Vector3(center.transform.position.x,
+                                                           Board.Instance.GetBoardTop() - 0.5f * player.cam.height,
+                                                           player.cam.camera.transform.position.z);
+    }
+
+    public float GetBoardBottom()
+    {
+        return board == null ? 0 : board[board.GetLength(0) - 1, 0].transform.position.y;
+    }
+
+    public float GetBoardTop()
+    {
+        return board == null ? 0 : board[0, 0].transform.position.y;
     }
 
     public void ClearPreviews()

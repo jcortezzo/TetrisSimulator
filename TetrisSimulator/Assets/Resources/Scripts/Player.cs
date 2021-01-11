@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     private bool wasRotated;
 
     public CameraInfo cam;
-
+    public float tLerp;
     public struct CameraInfo
     {
         public Camera camera;
@@ -98,10 +98,13 @@ public class Player : MonoBehaviour
             {
                 yPos = Board.Instance.GetBoardBottom() + 0.5 * cam.height;
             }
-            cam.camera.transform.position = new Vector3(
-                    cam.camera.transform.position.x,
-                    (float) yPos,
-                    cam.camera.transform.position.z);
+            
+            Vector3 newPos = new Vector3(cam.camera.transform.position.x,
+                                        (float)yPos,
+                                        cam.camera.transform.position.z);
+            Vector3 lerpPos = Vector3.Lerp(cam.camera.transform.position, newPos, tLerp);
+            cam.camera.transform.position = lerpPos;
+            //cam.camera.transform.position = newPos;
         }
     }
 
